@@ -1,0 +1,41 @@
+def generate_key(text, key):
+    key = list(key)
+    if len(text) == len(key):
+        return key
+    else:
+        for i in range(len(text) - len(key)):
+            key.append(key[i % len(key)])
+    return "".join(key)
+
+def encrypt_vigenere(text, key):
+    encrypted_text = []
+    key = generate_key(text, key)
+    for i in range(len(text)):
+        if text[i].isalpha():
+            shift_base = 65 if text[i].isupper() else 97
+            encrypted_text.append(chr((ord(text[i]) + ord(key[i]) - 2 * shift_base) % 26 + shift_base))
+        else:
+            encrypted_text.append(text[i])
+    return "".join(encrypted_text)
+
+def decrypt_vigenere(text, key):
+    decrypted_text = []
+    key = generate_key(text, key)
+    for i in range(len(text)):
+        if text[i].isalpha():
+            shift_base = 65 if text[i].isupper() else 97
+            decrypted_text.append(chr((ord(text[i]) - ord(key[i]) + 26) % 26 + shift_base))
+        else:
+            decrypted_text.append(text[i])
+    return "".join(decrypted_text)
+
+# Example usage
+print("Tarun(192210690)")
+plain_text = "Hello, World!"
+key = "KEY"
+
+encrypted = encrypt_vigenere(plain_text, key)
+print(f"Encrypted: {encrypted}")
+
+decrypted = decrypt_vigenere(encrypted, key)
+print(f"Decrypted: {decrypted}")
