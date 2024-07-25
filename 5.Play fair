@@ -1,0 +1,85 @@
+import string
+
+def generate_playfair_key_square(key):
+    key = key.upper().replace('J', 'I')
+    seen = set()
+    key_square = []
+    for char in key + string.ascii_uppercase.replace('J', ''):
+        if char not in seen:
+            seen.add(char)
+            key_square.append(char)
+    return [key_square[i * 5:(i + 1) * 5] for i in range(5)]
+
+def find_position(char, key_square):
+    for row in range(5):
+        for col in range(5):
+            if key_square[row][col] == char:
+                return row, col
+    return None
+
+def playfair_encrypt_pair(a, b, key_square):
+    row1, col1 = find_position(a, key_square)
+    row2, col2 = find_position(b, key_square)
+    
+    if row1 == row2:
+        return key_square[row1][(col1 + 1) % 5] + key_square[row2][(col2 + 1) % 5]
+    elif col1 == col2:
+        return key_square[(row1 + 1) % 5][col1] + key_square[(row2 + 1) % 5][col2]
+    else:
+        return key_square[row1][col2] + key_square[row2][col1]
+
+def playfair_decrypt_pair(a, b, key_square):
+    row1, col1 = find_position(a, key_square)
+    row2, col2 = find_position(b, key_square)
+    
+    if row1 == row2:
+        return key_square[row1][(col1 - 1) % 5] + key_square[row2][(col2 - 1) % 5]
+    elif col1 == col2:
+        return key_square[(row1 - 1) % 5][col1] + key_square[(row2 - 1) % 5][col2]
+    else:
+        return key_square[row1][col2] + key_square[row2][col1]
+
+def prepare_text(text):
+    text = text.upper().replace('J', 'I')
+    prepared_text = ''
+    i = 0
+    while i < len(text):
+        a = text[i]
+        b = text[i + 1] if i + 1 < len(text) else 'X'
+        if a == b:
+            prepared_text += a + 'X'
+            i += 1
+        else:
+            prepared_text += a + b
+            i += 2
+    if len(prepared_text) % 2 != 0:
+        prepared_text += 'X'
+    return prepared_text
+
+def playfair_encrypt(text, key):
+    key_square = generate_playfair_key_square(key)
+    text = prepare_text(text)
+    encrypted_text = ''
+    for i in range(0, len(text), 2):
+        encrypted_text += playfair_encrypt_pair(text[i], text[i + 1], key_square)
+    return encrypted_text
+
+def playfair_decrypt(text, key):
+    key_square = generate_playfair_key_square(key)
+    decrypted_text = ''
+    for i in range(0, len(text), 2):
+        decrypted_text += playfair_decrypt_pair(text[i], text[i + 1], key_square)
+    return decrypted_text
+
+# Example usage
+print("Tarun(192210690)")
+key = "PLAY"
+plain_text = "HELL"
+
+print(f"Key Square:\n{generate_playfair_key_square(key)}\n")
+
+encrypted = playfair_encrypt(plain_text, key)
+print(f"Encrypted: {encrypted}")
+
+decrypted = playfair_decrypt(encrypted, key)
+print(f"Decrypted: {decrypted}")
