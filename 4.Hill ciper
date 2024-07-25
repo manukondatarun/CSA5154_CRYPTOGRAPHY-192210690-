@@ -1,0 +1,49 @@
+import numpy as np
+import string
+
+def create_matrix_from_key(key, size):
+    matrix = []
+    for i in range(size):
+        row = [ord(key[i * size + j].upper()) - ord('A') for j in range(size)]
+        matrix.append(row)
+    return np.array(matrix)
+
+def mod_inverse(matrix, modulus):
+    determinant = int(np.round(np.linalg.det(matrix))) % modulus
+    determinant_inv = pow(determinant, -1, modulus)
+    matrix_mod_inv = determinant_inv * np.round(determinant * np.linalg.inv(matrix)).astype(int) % modulus
+    return matrix_mod_inv
+
+def encrypt_hill(plaintext, key_matrix, modulus=26):
+    size = key_matrix.shape[0]
+    plaintext = plaintext.upper().replace(' ', '')
+    padded_length = size * ((len(plaintext) + size - 1) // size)
+    plaintext += 'X' * (padded_length - len(plaintext))
+    encrypted_text = ''
+    for i in range(0, len(plaintext), size):
+        vector = np.array([ord(char) - ord('A') for char in plaintext[i:i+size]])
+        encrypted_vector = np.dot(key_matrix, vector) % modulus
+        encrypted_text += ''.join(chr(num + ord('A')) for num in encrypted_vector)
+    return encrypted_text
+
+def decrypt_hill(ciphertext, key_matrix, modulus=26):
+    size = key_matrix.shape[0]
+    key_matrix_inv = mod_inverse(key_matrix, modulus)
+    decrypted_text = ''
+    for i in range(0, len(ciphertext), size):
+        vector = np.array([ord(char) - ord('A') for char in ciphertext[i:i+size]])
+        decrypted_vector = np.dot(key_matrix_inv, vector) % modulus
+        decrypted_text += ''.join(chr(int(num) + ord('A')) for num in decrypted_vector)
+    return decrypted_text
+
+# Example usage
+print("Tarun(192210690)")
+key = "GYBNQKURP"  # 3x3 key matrix
+key_matrix = create_matrix_from_key(key, 3)
+
+plaintext = "HELLO"
+encrypted = encrypt_hill(plaintext, key_matrix)
+print(f"Encrypted: {encrypted}")
+
+decrypted = decrypt_hill(encrypted, key_matrix)
+print(f"Decrypted: {decrypted}")
