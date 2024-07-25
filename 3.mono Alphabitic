@@ -1,0 +1,45 @@
+import string
+
+def generate_substitution_alphabet():
+    alphabet = list(string.ascii_uppercase)
+    substitution_alphabet = alphabet[:]
+    random.shuffle(substitution_alphabet)
+    return ''.join(substitution_alphabet)
+
+def create_substitution_dict(substitution_alphabet):
+    normal_alphabet = string.ascii_uppercase
+    return {normal_alphabet[i]: substitution_alphabet[i] for i in range(len(normal_alphabet))}
+
+def encrypt_monoalphabetic(text, substitution_dict):
+    encrypted_text = []
+    for char in text.upper():
+        if char.isalpha():
+            encrypted_text.append(substitution_dict[char])
+        else:
+            encrypted_text.append(char)
+    return ''.join(encrypted_text)
+
+def decrypt_monoalphabetic(text, substitution_dict):
+    reversed_substitution_dict = {v: k for k, v in substitution_dict.items()}
+    decrypted_text = []
+    for char in text.upper():
+        if char.isalpha():
+            decrypted_text.append(reversed_substitution_dict[char])
+        else:
+            decrypted_text.append(char)
+    return ''.join(decrypted_text)
+
+# Example usage
+import random
+
+substitution_alphabet = generate_substitution_alphabet()
+substitution_dict = create_substitution_dict(substitution_alphabet)
+print("Tarun(192210690)")
+
+plain_text = "Hello, World!"
+
+encrypted = encrypt_monoalphabetic(plain_text, substitution_dict)
+print(f"Encrypted: {encrypted}")
+
+decrypted = decrypt_monoalphabetic(encrypted, substitution_dict)
+print(f"Decrypted: {decrypted}")
